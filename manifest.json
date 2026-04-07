@@ -1,10 +1,10 @@
 {
-  "name": "Chimex LCD Dumper Pro+",
-  "short_name": "LCD Dumper",
+  "name": "Chimex Tools",
+  "short_name": "ESPTools",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#050010",
-  "theme_color": "#0a0015",
+  "background_color": "#055010",
+  "theme_color": "#0a0b15",
   "icons": [
     {
       "src": "icon.png",
