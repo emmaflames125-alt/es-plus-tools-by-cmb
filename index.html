@@ -498,5 +498,36 @@
         // Start the whole thing when page loads
         window.onload = startChimexTools
     </script>
+    <script>
+        // ====================== INIT ======================
+window.addEventListener('load', () => {
+  // Hide loading screen properly
+  const setupScreen = document.getElementById('setupScreen');
+  setTimeout(() => {
+    setupScreen.style.transition = 'opacity 0.6s ease';
+    setupScreen.style.opacity = '0';
+    setTimeout(() => {
+      setupScreen.style.display = 'none';
+    }, 600);
+  }, 1200);
+
+  updateLineNumbers();
+});
+</script>
+<script>
+  // === PWA Service Worker Registration ===
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('Compiler/sw.js')
+        .then(reg => {
+          console.log('✅ Service Worker registered successfully');
+          console.log('Scope:', reg.scope);
+        })
+        .catch(err => {
+          console.error('❌ Service Worker registration failed:', err);
+        });
+    });
+  }
+</script>
 </body>
 </html>
