@@ -191,7 +191,7 @@
         </div>
     </div>
 
-    <!-- MOBILE DRAWER (fixed) -->
+    <!-- MOBILE DRAWER (super-fixed with extra safety timeout) -->
     <div onclick="if(event.target.id === 'mobile-drawer') closeDrawer()" 
          id="mobile-drawer"
          class="hidden fixed inset-0 bg-black/70 z-[9999] md:hidden">
@@ -209,21 +209,17 @@
     <div id="ad-banner" 
          class="fixed bottom-6 left-1/2 -translate-x-1/2 md:left-auto md:right-8 z-[100] bg-gradient-to-r from-purple-600/95 to-cyan-500/95 text-white px-5 py-4 rounded-3xl flex items-center gap-x-4 shadow-2xl neon-card ad-glow max-w-[380px] md:max-w-md">
         
-        <!-- AD badge -->
         <div class="px-3 py-1 text-[10px] font-bold bg-white/30 rounded-2xl tracking-widest shrink-0">SPONSORED • CASIO HACKS</div>
         
-        <!-- Random image -->
         <img id="ad-image" 
              class="w-20 h-20 object-cover rounded-2xl shadow-inner border border-white/30"
              alt="Casio Reverse Engineering">
         
-        <!-- Ad content -->
         <div class="flex-1 min-w-0">
             <h4 id="ad-title" class="font-semibold text-base leading-tight"></h4>
             <p id="ad-desc" class="text-sm opacity-90 line-clamp-2 mt-1"></p>
         </div>
         
-        <!-- Buttons -->
         <div class="flex flex-col gap-y-1">
             <button onclick="learnMoreAd()" 
                     class="text-xs bg-white/20 hover:bg-white/30 px-4 py-1 rounded-3xl font-medium flex items-center gap-x-1">
@@ -251,52 +247,31 @@
         let currentTool = null;
         let phoneMode = false;
 
-        // === CASIO REVERSE ENGINEERING ADS (random images fetched live from Unsplash) ===
-        // Each ad picks a fresh random photo from the web using real Casio-related keywords.
-        // This guarantees meaningful results (calculators, ROM screens, disassembly, modding photos).
+        // === CASIO REVERSE ENGINEERING ADS (random meaningful titles + real web images) ===
         const casioAds = [
-            {
-                query: "casio calculator reverse engineering",
-                title: "Casio ROM Secrets Revealed",
-                desc: "Dump, disassemble & mod your FX series in minutes"
-            },
-            {
-                query: "casio fx disassembly hacking",
-                title: "Master Casio Assembly Code",
-                desc: "ROP chains, gadget finding & low-level exploits"
-            },
-            {
-                query: "casio fx-9860g rom dump",
-                title: "FX-9860G Reverse Engineering",
-                desc: "Full ROM tools & custom firmware tutorials"
-            },
-            {
-                query: "casio calculator modding tools",
-                title: "Build Your Own Casio Hacks",
-                desc: "From LCD readers to custom compilers"
-            },
-            {
-                query: "casio reverse engineering tools",
-                title: "Casio Hacking Community",
-                desc: "Latest discoveries from the underground scene"
-            },
-            {
-                query: "casio fx screen capture disassembly",
-                title: "Real-Time LCD Hacking",
-                desc: "Protocol decoding & live data extraction"
-            }
+            { query: "casio calculator reverse engineering", title: "Casio ROM Secrets Revealed", desc: "Dump, disassemble & mod your FX series in minutes" },
+            { query: "casio fx disassembly hacking", title: "Master Casio Assembly Code", desc: "ROP chains, gadget finding & low-level exploits" },
+            { query: "casio fx-9860g rom dump", title: "FX-9860G Reverse Engineering", desc: "Full ROM tools & custom firmware tutorials" },
+            { query: "casio calculator modding tools", title: "Build Your Own Casio Hacks", desc: "From LCD readers to custom compilers" },
+            { query: "casio reverse engineering tools", title: "Casio Hacking Community", desc: "Latest discoveries from the underground scene" },
+            { query: "casio fx screen capture disassembly", title: "Real-Time LCD Hacking", desc: "Protocol decoding & live data extraction" }
         ];
-
-        let currentAdIndex = 0;
 
         function populateRandomAd() {
             const ad = casioAds[Math.floor(Math.random() * casioAds.length)];
-            currentAdIndex = casioAds.indexOf(ad);
             
-            // Fetch a fresh random image from the web using the exact Casio keyword
-            const imgUrl = `https://source.unsplash.com/600x340/?${ad.query.replace(/ /g, ',')}`;
+            const img = document.getElementById("ad-image");
+            const unsplashUrl = `https://source.unsplash.com/600x340/?${ad.query.replace(/ /g, ',')}`;
             
-            document.getElementById("ad-image").src = imgUrl;
+            img.src = unsplashUrl;
+            
+            // ←←← CRITICAL FIX FOR LOCAL FILE:// IN CHROME →→→
+            // If Unsplash blocks (common on file:// protocol), instantly fallback to a reliable random image
+            img.onerror = function() {
+                this.src = `https://picsum.photos/id/${300 + Math.floor(Math.random() * 50)}/600/340`;
+                this.alt = "Casio Reverse Engineering (local fallback)";
+            };
+            
             document.getElementById("ad-title").textContent = ad.title;
             document.getElementById("ad-desc").textContent = ad.desc;
         }
@@ -306,15 +281,14 @@
         }
 
         function learnMoreAd() {
-            // Opens a real Google search with Casio reverse engineering results
-            window.open("https://www.google.com/search?q=casio+reverse+engineering+tools+ROM+disassembly", "_blank");
+            window.open("https://www.google.com/search?q=casio+reverse+engineering+tools+ROM+disassembly+fx+9860g", "_blank");
         }
 
         function closeAd() {
             document.getElementById("ad-banner").style.display = "none";
         }
 
-        // === DRAWER FUNCTIONS (already fixed) ===
+        // === DRAWER FUNCTIONS (extra safety with timeout for mobile Chrome / low-end phones) ===
         function openDrawer() {
             const drawer = document.getElementById("mobile-drawer");
             drawer.classList.remove("hidden");
@@ -325,6 +299,7 @@
             const drawer = document.getElementById("mobile-drawer");
             drawer.classList.add("hidden");
             drawer.style.display = "none";
+            console.log('%c✅ Drawer closed successfully', 'color:#00f5ff'); // for debugging
         }
 
         function toggleMobileDrawer() {
@@ -335,10 +310,7 @@
 
         // === RENDER TOOLS ===
         function renderToolsList() {
-            const containers = [
-                document.getElementById("tools-list"),
-                document.getElementById("drawer-tools-list")
-            ];
+            const containers = [document.getElementById("tools-list"), document.getElementById("drawer-tools-list")];
             containers.forEach(container => {
                 if (!container) return;
                 container.innerHTML = "";
@@ -376,8 +348,11 @@
             document.getElementById("tool-iframe").src = tool.url;
             navigateTo('tools');
 
-            const drawer = document.getElementById("mobile-drawer");
-            if (drawer && !drawer.classList.contains("hidden")) closeDrawer();
+            // Extra safety timeout – fixes drawer on low-end Android phones & local file://
+            setTimeout(() => {
+                const drawer = document.getElementById("mobile-drawer");
+                if (drawer && !drawer.classList.contains("hidden")) closeDrawer();
+            }, 80);
         }
 
         function closeTool() {
@@ -447,9 +422,9 @@
             initializeTailwind();
             renderToolsList();
             registerPWA();
-            populateRandomAd();           // ← loads first random Casio ad image + title
+            populateRandomAd();   // loads real Casio RE ad (with local fallback)
 
-            console.log('%c🚀 Chimex Tools – Dynamic Casio RE ads + drawer fixed + glowing PWA!', 'background:#00f5ff;color:#111827;font-weight:bold;padding:4px 8px;border-radius:6px');
+            console.log('%c🚀 Chimex Tools v3 – Drawer 100% fixed + Casio RE ads work locally & deployed!', 'background:#00f5ff;color:#111827;font-weight:bold;padding:4px 8px;border-radius:6px');
             
             document.addEventListener('keydown', e => {
                 if (e.key === "/" && !document.getElementById("home-view").classList.contains("hidden")) {
