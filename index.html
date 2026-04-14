@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chimex Tools • Dashboard</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- PWA -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#111827">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -14,190 +17,243 @@
     <link rel="apple-touch-icon" href="icon.png">
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        
         :root { --tw-color-primary: #00f5ff; }
+        
         * { transition-property: color, background-color, border-color, text-decoration-color, fill, stroke; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 200ms; }
         
+        /* SUPER GLOWING BACKGROUND */
         body {
             background: radial-gradient(circle at 50% 20%, rgba(0, 245, 255, 0.35) 0%, transparent 70%),
                         linear-gradient(to bottom, #111827, #0a0a0a);
             animation: globalPulse 8s ease infinite;
         }
-        @keyframes globalPulse { 0%,100% { filter: brightness(1) drop-shadow(0 0 40px rgba(0,245,255,0.4)); } 50% { filter: brightness(1.25) drop-shadow(0 0 80px rgba(0,245,255,0.6)); } }
+        
+        @keyframes globalPulse {
+            0%, 100% { filter: brightness(1) drop-shadow(0 0 40px rgba(0, 245, 255, 0.4)); }
+            50% { filter: brightness(1.25) drop-shadow(0 0 80px rgba(0, 245, 255, 0.6)); }
+        }
         
         .neon-text { text-shadow: 0 0 20px #00f5ff, 0 0 40px #00f5ff, 0 0 60px #00f5ff; }
-        .neon-card { box-shadow: 0 0 25px rgba(0,245,255,0.4), 0 25px 50px -12px rgb(0 245 255 / 0.3); }
+        .neon-border { box-shadow: 0 0 30px #00f5ff, 0 0 60px rgba(0, 245, 255, 0.5); }
+        .neon-card { box-shadow: 0 0 25px rgba(0, 245, 255, 0.4), 0 25px 50px -12px rgb(0 245 255 / 0.3); }
         
-        .modal-pop { animation: modalPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        @keyframes modalPop { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
+        .hero-text { animation: glow 2s ease-in-out infinite; }
+        @keyframes glow { 0%, 100% { text-shadow: 0 0 15px #00f5ff; } 50% { text-shadow: 0 0 50px #00f5ff, 0 0 80px #00f5ff; } }
+        
+        .card-hover:hover { transform: translateY(-8px) scale(1.05); box-shadow: 0 0 50px #00f5ff; }
+        
+        /* Sidebar glow on mobile too */
+        #tools-list .neon-card { transition: all 0.3s ease; }
+        
+        /* Even stronger ad glow */
+        .ad-glow { animation: adPulse 3s ease infinite; }
+        @keyframes adPulse { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.4); } }
+        
+        #ad-image { animation: floatAd 5s ease-in-out infinite; }
     </style>
 </head>
 <body class="bg-zinc-950 text-zinc-100 overflow-hidden">
-
-    <!-- LOGIN MODAL (always visible first) -->
-    <div id="login-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-[99999]">
-        <div class="modal-pop bg-zinc-900 rounded-3xl max-w-md w-full mx-4 p-8 neon-card">
-            <div class="text-center mb-8">
-                <div class="inline-flex items-center gap-x-3 mx-auto mb-4">
-                    <i class="fa-solid fa-tools text-4xl text-cyan-400"></i>
-                    <h1 class="text-4xl font-semibold neon-text">Chimex</h1>
-                </div>
-                <h2 class="text-2xl font-semibold">Create your account</h2>
-                <p class="text-zinc-400 text-sm mt-1">Secret code is hidden — only you know it</p>
-            </div>
-            
-            <form id="login-form" class="space-y-5">
-                <div>
-                    <label class="text-xs uppercase text-zinc-400 block mb-1">Your Name</label>
-                    <input id="name-input" type="text" value="Admin" required class="w-full bg-zinc-800 border border-zinc-700 focus:border-cyan-400 rounded-3xl px-5 py-4 text-white outline-none">
-                </div>
-                <div>
-                    <label class="text-xs uppercase text-zinc-400 block mb-1">Username</label>
-                    <input id="username-input" type="text" value="admin" required class="w-full bg-zinc-800 border border-zinc-700 focus:border-cyan-400 rounded-3xl px-5 py-4 text-white outline-none">
-                </div>
-                <div>
-                    <label class="text-xs uppercase text-zinc-400 block mb-1">Secret Code (optional)</label>
-                    <input id="secret-input" type="password" placeholder="Enter secret code" class="w-full bg-zinc-800 border border-zinc-700 focus:border-cyan-400 rounded-3xl px-5 py-4 text-white outline-none">
-                </div>
-                <button type="submit" class="w-full py-4 bg-gradient-to-r from-cyan-400 to-purple-500 text-zinc-950 font-semibold rounded-3xl text-lg flex items-center justify-center gap-x-2">
-                    <i class="fa-solid fa-rocket"></i> JOIN CHIMEX
-                </button>
-            </form>
-            
-            <p onclick="skipToDemo()" class="text-center text-zinc-400 text-xs mt-6 cursor-pointer hover:text-cyan-300">Quick demo</p>
-        </div>
-    </div>
-
-    <!-- FULL DASHBOARD (shown after successful join) -->
-    <div id="main-app" class="hidden flex flex-col h-screen">
-
-        <!-- Navbar -->
-        <nav class="bg-zinc-900/95 backdrop-blur-xl border-b border-cyan-400/30 px-4 md:px-8 py-4 flex items-center justify-between sticky top-0 z-50 neon-card">
+    <!-- Top Navbar – glowing -->
+    <nav class="bg-zinc-900/95 backdrop-blur-xl border-b border-cyan-400/30 px-4 md:px-8 py-4 flex items-center justify-between sticky top-0 z-50 neon-border">
+        <div class="flex items-center gap-x-3">
             <div class="flex items-center gap-x-3">
                 <div class="w-9 h-9 bg-gradient-to-br from-cyan-400 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/60 neon-card">
                     <i class="fa-solid fa-tools text-2xl rotate-12"></i>
                 </div>
-                <h1 class="text-3xl font-semibold tracking-tighter neon-text" style="font-family: 'Space Grotesk', sans-serif;">Chimex</h1>
+                <h1 class="text-3xl font-semibold tracking-tighter neon-text" style="font-family: 'Space Grotesk', sans-serif;">
+                    Chimex
+                </h1>
                 <span class="text-cyan-400 text-2xl font-medium tracking-widest">TOOLS</span>
             </div>
+        </div>
 
-            <div class="flex items-center gap-x-2 bg-zinc-800 rounded-3xl p-1 neon-card">
-                <button onclick="switchTab(0)" id="tab-0" class="tab-btn active px-7 py-2 rounded-3xl text-sm font-medium flex items-center gap-x-2"><i class="fa-solid fa-cubes"></i> Tools</button>
-                <button onclick="switchTab(1)" id="tab-1" class="tab-btn px-7 py-2 rounded-3xl text-sm font-medium flex items-center gap-x-2"><i class="fa-solid fa-comments"></i> Chat</button>
-                <button onclick="switchTab(2)" id="tab-2" class="tab-btn px-7 py-2 rounded-3xl text-sm font-medium flex items-center gap-x-2"><i class="fa-solid fa-user"></i> Profile</button>
+        <div class="flex items-center gap-x-2 bg-zinc-800 rounded-3xl p-1 neon-card">
+            <button onclick="navigateTo('home')" id="nav-home"
+                    class="nav-btn active px-6 py-2 rounded-3xl text-sm font-medium flex items-center gap-x-2">
+                <i class="fa-solid fa-house"></i><span class="hidden sm:inline">Home</span>
+            </button>
+            <button onclick="navigateTo('tools')" id="nav-tools"
+                    class="nav-btn px-6 py-2 rounded-3xl text-sm font-medium flex items-center gap-x-2">
+                <i class="fa-solid fa-cubes"></i><span class="hidden sm:inline">Tools</span>
+            </button>
+        </div>
+
+        <div class="flex items-center gap-x-4">
+            <button onclick="togglePhoneMode()" 
+                    id="mode-btn"
+                    class="flex items-center gap-x-2 px-4 py-2 bg-zinc-800 hover:bg-cyan-950 border border-cyan-400/30 rounded-3xl text-sm font-medium neon-card">
+                <i id="mode-icon" class="fa-solid fa-mobile-screen-button"></i>
+                <span id="mode-text" class="hidden md:inline">Phone Mode</span>
+            </button>
+
+            <button onclick="installPWA()" 
+                    class="flex items-center gap-x-2 px-5 py-2 bg-gradient-to-r from-cyan-400 to-purple-500 hover:from-cyan-300 hover:to-purple-400 text-zinc-950 font-semibold rounded-3xl text-sm shadow-lg shadow-cyan-500/40 neon-card">
+                <i class="fa-solid fa-download"></i>
+                <span class="hidden sm:inline">Install App</span>
+            </button>
+
+            <div class="hidden md:flex items-center gap-x-2 text-emerald-400 text-sm">
+                <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                ONLINE
             </div>
+        </div>
+    </nav>
 
-            <div class="flex items-center gap-x-4">
-                <button onclick="togglePhoneMode()" id="mode-btn" class="flex items-center gap-x-2 px-4 py-2 bg-zinc-800 hover:bg-cyan-950 border border-cyan-400/30 rounded-3xl text-sm font-medium neon-card">
-                    <i id="mode-icon" class="fa-solid fa-mobile-screen-button"></i>
-                    <span id="mode-text" class="hidden md:inline">Phone Mode</span>
-                </button>
-                <button onclick="logout()" class="text-zinc-400 hover:text-red-400">Logout</button>
+    <div class="flex flex-col md:flex-row h-[calc(100vh-73px)] relative">
+        
+        <!-- Sidebar – always visible, glowing, works perfectly on mobile (stacks on top) -->
+        <div class="w-full md:w-80 bg-zinc-900 border-r border-cyan-400/20 flex flex-col neon-card">
+            <div class="px-6 pt-8 pb-4">
+                <h2 class="uppercase text-cyan-400 text-xs font-semibold tracking-[2px] flex items-center gap-x-2">
+                    <i class="fa-solid fa-cube"></i> AVAILABLE TOOLS
+                </h2>
+                <p class="text-zinc-400 text-sm mt-1">Tap any tool below to launch it instantly</p>
             </div>
-        </nav>
+            <div id="tools-list" class="flex-1 px-4 space-y-4 overflow-y-auto pb-8"></div>
+            
+            <div class="p-6 border-t border-zinc-800 text-xs text-zinc-500 flex items-center justify-between">
+                <div>Glowing • Beautiful • Ready</div>
+            </div>
+        </div>
 
-        <div class="flex flex-1 overflow-hidden">
-            <!-- Tools Sidebar -->
-            <div class="w-full md:w-80 bg-zinc-900 border-r border-cyan-400/20 flex flex-col neon-card">
-                <div class="px-6 pt-8 pb-4">
-                    <h2 class="uppercase text-cyan-400 text-xs font-semibold tracking-[2px] flex items-center gap-x-2"><i class="fa-solid fa-cube"></i> AVAILABLE TOOLS</h2>
+        <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col bg-grid relative overflow-hidden">
+            
+            <!-- HOME VIEW -->
+            <div id="home-view" class="flex-1 flex flex-col items-center justify-center p-6 md:p-10">
+                <div class="max-w-2xl text-center">
+                    <div class="inline-flex items-center gap-x-3 bg-zinc-900/80 border border-cyan-400/30 text-cyan-400 text-sm px-6 py-3 rounded-3xl mb-8 neon-border">
+                        <i class="fa-solid fa-rocket animate-bounce"></i>
+                        FULLY GLOWING DASHBOARD
+                        <i class="fa-solid fa-rocket animate-bounce" style="animation-delay:300ms"></i>
+                    </div>
+                    
+                    <h1 class="text-5xl md:text-7xl font-semibold leading-none tracking-tighter mb-6 neon-text" style="font-family: 'Space Grotesk', sans-serif;">
+                        One hub.<br>Every tool.<br><span class="text-cyan-400">Glowing everywhere.</span>
+                    </h1>
+                    
+                    <p class="text-xl md:text-2xl text-zinc-400 mb-10">ROP Compiler • LCD Reader • Beautiful neon PWA</p>
+                    
+                    <div onclick="navigateTo('tools')" class="cursor-pointer inline-flex items-center gap-x-3 bg-gradient-to-r from-cyan-400 to-purple-500 text-zinc-950 px-8 py-4 rounded-3xl text-lg font-semibold shadow-2xl shadow-cyan-500/50 neon-card">
+                        Launch Tools <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </div>
                 </div>
-                <div id="tools-list" class="flex-1 px-4 space-y-4 overflow-y-auto pb-8"></div>
             </div>
 
-            <!-- Main Content -->
-            <div class="flex-1 flex flex-col relative overflow-hidden">
-                <!-- Tools View -->
-                <div id="view-0" class="flex-1 flex flex-col">
-                    <div id="home-view" class="flex-1 flex flex-col items-center justify-center p-6 md:p-10">
-                        <div class="max-w-2xl text-center">
-                            <h1 class="text-5xl md:text-7xl font-semibold leading-none tracking-tighter mb-6 neon-text">One hub.<br>Every tool.</h1>
-                            <p class="text-xl md:text-2xl text-zinc-400">ROP Compiler • LCD Reader • Beautiful neon PWA</p>
+            <!-- TOOL VIEW (iframe) -->
+            <div id="tool-view" class="hidden flex-1 flex-col">
+                <div class="px-4 md:px-8 py-5 border-b border-zinc-800 flex items-center justify-between bg-white/5 backdrop-blur-md">
+                    <div class="flex items-center gap-x-4">
+                        <div id="tool-icon" class="text-3xl"></div>
+                        <div>
+                            <h2 id="tool-title" class="text-2xl font-semibold"></h2>
+                            <p id="tool-desc" class="text-zinc-400 text-sm"></p>
                         </div>
                     </div>
-                    <div id="tool-view" class="hidden flex-1 flex-col">
-                        <div class="px-4 md:px-8 py-5 border-b border-zinc-800 flex items-center justify-between bg-white/5 backdrop-blur-md">
-                            <div class="flex items-center gap-x-4">
-                                <div id="tool-icon" class="text-3xl"></div>
-                                <div>
-                                    <h2 id="tool-title" class="text-2xl font-semibold"></h2>
-                                    <p id="tool-desc" class="text-zinc-400 text-sm"></p>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-x-3">
-                                <button onclick="openInNewTab()" class="flex items-center gap-x-2 px-5 py-2 bg-white/10 hover:bg-white/20 rounded-3xl text-sm font-medium">New Tab</button>
-                                <button onclick="closeTool()" class="w-10 h-10 flex items-center justify-center text-2xl hover:text-red-400">✕</button>
-                            </div>
-                        </div>
-                        <iframe id="tool-iframe" class="flex-1 w-full border-0" frameborder="0" allowfullscreen></iframe>
+                    <div class="flex items-center gap-x-3">
+                        <button onclick="openInNewTab()" class="flex items-center gap-x-2 px-5 py-2 bg-white/10 hover:bg-white/20 rounded-3xl text-sm font-medium">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i> New Tab
+                        </button>
+                        <button onclick="closeTool()" class="w-10 h-10 flex items-center justify-center text-2xl hover:text-red-400">✕</button>
                     </div>
                 </div>
-
-                <!-- Chat & Profile views (kept short for preview) -->
-                <div id="view-1" class="flex-1 flex flex-col hidden p-4">Chat tab ready (type below)</div>
-                <div id="view-2" class="flex-1 flex flex-col hidden items-center justify-center">Profile tab ready</div>
+                <iframe id="tool-iframe" class="flex-1 w-full border-0" frameborder="0" allowfullscreen></iframe>
             </div>
         </div>
     </div>
 
+    <!-- GLOWING CASIO REVERSE ENGINEERING AD -->
+    <div id="ad-banner" 
+         class="fixed bottom-6 left-1/2 -translate-x-1/2 md:left-auto md:right-8 z-[100] bg-gradient-to-r from-purple-600/95 to-cyan-500/95 text-white px-5 py-4 rounded-3xl flex items-center gap-x-4 shadow-2xl neon-card ad-glow max-w-[380px] md:max-w-md">
+        
+        <div class="px-3 py-1 text-[10px] font-bold bg-white/30 rounded-2xl tracking-widest shrink-0">SPONSORED • CASIO HACKS</div>
+        
+        <img id="ad-image" 
+             class="w-20 h-20 object-cover rounded-2xl shadow-inner border border-white/30"
+             alt="Casio Reverse Engineering">
+        
+        <div class="flex-1 min-w-0">
+            <h4 id="ad-title" class="font-semibold text-base leading-tight"></h4>
+            <p id="ad-desc" class="text-sm opacity-90 line-clamp-2 mt-1"></p>
+        </div>
+        
+        <div class="flex flex-col gap-y-1">
+            <button onclick="learnMoreAd()" 
+                    class="text-xs bg-white/20 hover:bg-white/30 px-4 py-1 rounded-3xl font-medium flex items-center gap-x-1">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> EXPLORE
+            </button>
+            <button onclick="refreshAd()" 
+                    class="text-xl text-white/70 hover:text-white">↻</button>
+            <button onclick="closeAd()" 
+                    class="text-xl text-white/70 hover:text-white">×</button>
+        </div>
+    </div>
+
     <script>
-        function initializeTailwind() { return { config() { return { content: [], theme: { extend: {} }, plugins: [] }; } }; }
-
-        let currentUser = null;
-        let currentTool = null;
-
-        const ADMIN_CODE = "@@@god_mode@@";
-        const MOD_CODE = "@@@user_999o@@";
-
-        function handleLogin(e) {
-            e.preventDefault();
-            const name = (document.getElementById('name-input').value || "User").trim();
-            const username = (document.getElementById('username-input').value || "user").trim();
-            const secret = document.getElementById('secret-input').value.trim();
-
-            let role = "user";
-            if (secret === ADMIN_CODE) role = "admin";
-            else if (secret === MOD_CODE) role = "moderator";
-
-            currentUser = { name, username, role, stars: role === "admin" ? 9999 : role === "moderator" ? 999 : 50 };
-
-            localStorage.setItem('chimexUser', JSON.stringify(currentUser));
-
-            // Hide login and show full dashboard
-            document.getElementById('login-modal').style.display = 'none';
-            document.getElementById('main-app').classList.remove('hidden');
-
-            renderToolsList();
-            console.log('%c✅ Logged in as ' + role.toUpperCase(), 'background:#00f5ff;color:#111827;padding:4px 8px;border-radius:6px');
+        // === TAILWIND INIT ===
+        function initializeTailwind() {
+            return { config(userConfig = {}) { return { content: [], theme: { extend: {} }, plugins: [], ...userConfig }; }, theme: { extend: {} } };
         }
 
-        function skipToDemo() {
-            currentUser = { name: "Demo User", username: "demo", role: "user", stars: 100 };
-            localStorage.setItem('chimexUser', JSON.stringify(currentUser));
-            document.getElementById('login-modal').style.display = 'none';
-            document.getElementById('main-app').classList.remove('hidden');
-            renderToolsList();
-        }
-
-        function logout() {
-            if (confirm("Logout?")) location.reload();
-        }
-
+        // === TOOLS ===
         let tools = [
-            { id: 1, name: "ROP Compiler", desc: "Powerful ROP chain compiler & gadget finder.", icon: "fa-solid fa-code-branch", color: "text-cyan-400", url: "rop-compiler/" },
-            { id: 2, name: "LCD Reader", desc: "Real-time LCD screen reader & protocol decoder.", icon: "fa-solid fa-display", color: "text-purple-400", url: "lcd-reader/" }
+            { id: 1, name: "ROP Compiler", desc: "Powerful ROP chain compiler & gadget finder. Ideal for exploit development.", icon: "fa-solid fa-code-branch", color: "text-cyan-400", url: "rop-compiler/" },
+            { id: 2, name: "LCD Reader", desc: "Real-time LCD screen reader & protocol decoder for embedded devices.", icon: "fa-solid fa-display", color: "text-purple-400", url: "lcd-reader/" }
         ];
 
+        let currentTool = null;
+        let phoneMode = false;
+
+        // === CASIO ADS (with reliable fallback) ===
+        const casioAds = [
+            { query: "casio calculator reverse engineering", title: "Casio ROM Secrets Revealed", desc: "Dump, disassemble & mod your FX series in minutes" },
+            { query: "casio fx disassembly hacking", title: "Master Casio Assembly Code", desc: "ROP chains, gadget finding & low-level exploits" },
+            { query: "casio fx-9860g rom dump", title: "FX-9860G Reverse Engineering", desc: "Full ROM tools & custom firmware tutorials" },
+            { query: "casio calculator modding tools", title: "Build Your Own Casio Hacks", desc: "From LCD readers to custom compilers" },
+            { query: "casio reverse engineering tools", title: "Casio Hacking Community", desc: "Latest discoveries from the underground scene" },
+            { query: "casio fx screen capture disassembly", title: "Real-Time LCD Hacking", desc: "Protocol decoding & live data extraction" }
+        ];
+
+        function populateRandomAd() {
+            const ad = casioAds[Math.floor(Math.random() * casioAds.length)];
+            const img = document.getElementById("ad-image");
+            
+            img.src = `https://source.unsplash.com/600x340/?${ad.query.replace(/ /g, ',')}`;
+            
+            img.onerror = () => {
+                img.src = `https://picsum.photos/id/${300 + Math.floor(Math.random()*50)}/600/340`;
+                img.onerror = () => { img.src = "https://picsum.photos/id/1015/600/340"; };
+            };
+            
+            document.getElementById("ad-title").textContent = ad.title;
+            document.getElementById("ad-desc").textContent = ad.desc;
+        }
+
+        function refreshAd() { populateRandomAd(); }
+        function learnMoreAd() {
+            window.open("https://www.google.com/search?q=casio+reverse+engineering+tools+ROM+disassembly+fx+9860g", "_blank");
+        }
+        function closeAd() { document.getElementById("ad-banner").style.display = "none"; }
+
+        // === RENDER TOOLS (no drawer – simple & clean) ===
         function renderToolsList() {
             const container = document.getElementById("tools-list");
             container.innerHTML = "";
+            
             tools.forEach(tool => {
-                const div = document.createElement('div');
-                div.className = "cursor-pointer group flex gap-4 bg-zinc-800 hover:bg-zinc-700 border border-transparent hover:border-cyan-400/40 rounded-3xl p-5 neon-card";
-                div.innerHTML = `<div class="text-4xl \( {tool.color}"><i class=" \){tool.icon}"></i></div>
-                                 <div class="flex-1"><h3 class="font-semibold text-lg">\( {tool.name}</h3><p class="text-zinc-400 text-sm mt-1"> \){tool.desc}</p><div class="mt-4 text-xs uppercase flex justify-end text-cyan-400">Launch →</div></div>`;
-                div.onclick = () => launchTool(tool.id);
-                container.appendChild(div);
+                const itemHTML = `
+                <div onclick="launchTool(${tool.id})" 
+                     class="cursor-pointer group flex gap-4 bg-zinc-800 hover:bg-zinc-700 border border-transparent hover:border-cyan-400/40 rounded-3xl p-5 neon-card card-hover">
+                    <div class="text-4xl \( {tool.color}"><i class=" \){tool.icon}"></i></div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-lg">${tool.name}</h3>
+                        <p class="text-zinc-400 text-sm line-clamp-3 mt-1">${tool.desc}</p>
+                        <div class="mt-4 text-xs uppercase flex justify-end text-cyan-400">Launch →</div>
+                    </div>
+                </div>`;
+                container.innerHTML += itemHTML;
             });
         }
 
@@ -205,14 +261,18 @@
             const tool = tools.find(t => t.id === id);
             if (!tool) return;
             currentTool = tool;
+
             document.getElementById("home-view").classList.add("hidden");
             const toolView = document.getElementById("tool-view");
             toolView.classList.remove("hidden");
             toolView.classList.add("flex");
+
             document.getElementById("tool-icon").innerHTML = `<i class="${tool.icon} ${tool.color}"></i>`;
             document.getElementById("tool-title").innerHTML = tool.name;
             document.getElementById("tool-desc").innerHTML = tool.desc;
+
             document.getElementById("tool-iframe").src = tool.url;
+            navigateTo('tools');
         }
 
         function closeTool() {
@@ -221,28 +281,64 @@
             document.getElementById("tool-view").classList.add("hidden");
             document.getElementById("tool-view").classList.remove("flex");
             document.getElementById("home-view").classList.remove("hidden");
+            navigateTo('home');
         }
 
         function openInNewTab() {
             if (currentTool) window.open(currentTool.url, "_blank");
         }
 
-        function switchTab(n) {
-            // Simple tab switch (you can expand later)
-            alert("Tab " + n + " clicked (full chat & profile coming in next update)");
+        function navigateTo(page) {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active', 'bg-zinc-700', 'text-white'));
+            if (page === 'home') document.getElementById('nav-home').classList.add('active', 'bg-zinc-700', 'text-white');
+            if (page === 'tools') document.getElementById('nav-tools').classList.add('active', 'bg-zinc-700', 'text-white');
         }
 
+        function togglePhoneMode() {
+            phoneMode = !phoneMode;
+            const body = document.body;
+            const icon = document.getElementById("mode-icon");
+            const text = document.getElementById("mode-text");
+
+            if (phoneMode) {
+                body.classList.add("phone-mode");
+                icon.classList.replace("fa-mobile-screen-button", "fa-desktop");
+                text.textContent = "Desktop Mode";
+            } else {
+                body.classList.remove("phone-mode");
+                icon.classList.replace("fa-desktop", "fa-mobile-screen-button");
+                text.textContent = "Phone Mode";
+            }
+        }
+
+        // === PWA ===
+        let deferredPrompt = null;
+        function registerPWA() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js')
+                    .then(() => console.log('%c✅ PWA ready!', 'background:#00f5ff;color:#000;padding:2px 6px;border-radius:4px'));
+            }
+        }
+        window.addEventListener('beforeinstallprompt', (e) => { deferredPrompt = e; });
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+            } else if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+                alert("📱 On iOS: Tap Share → Add to Home Screen");
+            } else {
+                alert("📲 Tap the install icon in your browser’s address bar");
+            }
+        }
+
+        // === START ===
         function startChimexTools() {
             initializeTailwind();
-            const saved = localStorage.getItem('chimexUser');
-            if (saved) {
-                currentUser = JSON.parse(saved);
-                document.getElementById('login-modal').style.display = 'none';
-                document.getElementById('main-app').classList.remove('hidden');
-                renderToolsList();
-            }
-            document.getElementById('login-form').addEventListener('submit', handleLogin);
-            console.log('%c🚀 Chimex Tools ready — no blank screen', 'background:#00f5ff;color:#111827;font-weight:bold;padding:4px 8px;border-radius:6px');
+            renderToolsList();
+            registerPWA();
+            populateRandomAd();
+
+            console.log('%c🚀 Chimex Tools – Drawer removed, ultra-glowing version loaded!', 'background:#00f5ff;color:#111827;font-weight:bold;padding:4px 8px;border-radius:6px');
         }
 
         window.onload = startChimexTools;
